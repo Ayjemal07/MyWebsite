@@ -77,40 +77,44 @@ def home():
 
 @app.route('/jobs')
 def jobs():
-    cards="""
+    list_of_all_jobs = ["jobs/1.txt","jobs/2.txt","jobs/3.txt"]
+    list_of_cards = []
+    for i in list_of_all_jobs:
+        list_of_cards.append(f"""
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Job title</h5>
+                    <p class="card-text">Job description</p>
+                    <a href="/jobDescription?jobId={i}" class="btn btn-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+        """)
+    j=''.join(list_of_cards)
+    cards =f"""
     <div class="container">
         <div class="row">
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Job title</h5>
-                        <p class="card-text">Job description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Job title</h5>
-                        <p class="card-text">Job description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Job title</h5>
-                        <p class="card-text">Job description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
+            {j}
         </div>
     </div>
     """
     return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + cards + BODY_END + "</html>"
+
+@app.route('/jobDescription',methods=['GET'])
+def jobdes():
+    jobId=request.args.get('jobId', None)
+    if jobId:
+        f=open(request.args.get('jobId'), 'r')
+        desc=f.read()
+        f.close()
+        description=f"""
+            <div class="container">
+                <h1>{jobId}</h1>
+                <p>{desc}</p>
+            </div>
+        """     
+    return DOCT + "<html>" + HEAD+ BODY_START + NAVIGATION_BAR + description + BODY_END + "</html>"
 
 @app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
@@ -226,7 +230,7 @@ def repairs():
                     <div class="card-body">
                         <h5 class="card-title">Electronics repair</h5>
                         <p class="card-text">Job description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
+                        <a href="" class="btn btn-primary">Read More</a>
                     </div>
                 </div>
             </div>
@@ -235,7 +239,7 @@ def repairs():
                     <div class="card-body">
                         <h5 class="card-title">Plumbing</h5>
                         <p class="card-text">Job description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
+                        <a href="" class="btn btn-primary">Read More</a>
                     </div>
                 </div>
             </div>
@@ -244,7 +248,7 @@ def repairs():
                     <div class="card-body">
                         <h5 class="card-title">Handymans</h5>
                         <p class="card-text">Description</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
+                        <a href="" class="btn btn-primary">Read More</a>
                     </div>
                 </div>
             </div>
