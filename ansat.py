@@ -84,9 +84,9 @@ def jobs():
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">Job title</h5>
+                    <h5 class="card-title">{i}</h5>
                     <p class="card-text">Job description</p>
-                    <a href="/jobDescription?jobId={i}" class="btn btn-primary">Read More</a>
+                    <a href="/jobDescription?job_id={i}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
         </div>
@@ -103,14 +103,14 @@ def jobs():
 
 @app.route('/jobDescription',methods=['GET'])
 def jobdes():
-    jobId=request.args.get('jobId', None)
-    if jobId:
-        f=open(request.args.get('jobId'), 'r')
+    job_id=request.args.get('job_id', None)
+    if job_id:
+        f=open(request.args.get('job_id'), 'r')
         desc=f.read()
         f.close()
         description=f"""
             <div class="container">
-                <h1>{jobId}</h1>
+                <h1>{job_id}</h1>
                 <p>{desc}</p>
             </div>
         """     
@@ -156,14 +156,26 @@ def contactUs():
         Country=request.form['Country']
     else:
         Country=""
+    if request.form.getlist('interest',None)!=None:
+        inter=request.form.getlist('interest')
+        interest=','.join(inter)
+    else:
+        interest=""
     if request.form.get('questions',None) != None:
         questions=request.form['questions']
     else:
         questions=""
+
     if fname != "" and Gender!="":
         f=open(f"{fname}.txt", "w")
         print((fname+' '+lname + ' ' +email+' '+phone+' '+questions +' '+Gender +' ' +Country),file=f)
         f.close()
+
+    if fname!="" and interest!="":
+        f=open(f"{fname}.txt", "w")
+        print((fname+' '+lname + ' ' +email+' '+phone+' '+questions +' '+Gender +' ' +Country+ ' '+interest),file=f)
+        f.close()
+
     contact_form=f"""
     <div class="container">
         <div class="row">
@@ -208,6 +220,25 @@ def contactUs():
                     <option value="UK">UK</option>
                 </select>
                 </div>
+                <label for="Interest" class="form-label">What services are you interested in? </label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Jobs" name="interest" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Jobs
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Repairs" name="interest" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Repairs
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="Real Estate" name="interest" id="flexCheckChecked" checked>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Real Estate
+                    </label>
+                </div>
                 <div class="mb-3">
                 <label for="questions" class="form-label">Write your questions/concerns here</label>
                 <textarea class="form-control" id="questions" name="questions" rows="3"></textarea>
@@ -221,38 +252,41 @@ def contactUs():
 
 
 @app.route('/repairs')
-def repairs():
-    rep="""
+def repair():
+    list_of_repairs=["repairs/1.txt", "repairs/2.txt", "repairs/3.txt"]
+    list_of_r=[]
+    for i in list_of_repairs:
+        list_of_r.append(f"""
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{i}</h5>
+                    <p class="card-text">Repair description</p>
+                    <a href="/repairDescription?repid={i}" class="btn btn-primary">Read More</a>
+                </div>
+            </div>
+        </div>""")
+    j=''.join(list_of_r)
+    cards =f"""
     <div class="container">
         <div class="row">
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Electronics repair</h5>
-                        <p class="card-text">Job description</p>
-                        <a href="" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Plumbing</h5>
-                        <p class="card-text">Job description</p>
-                        <a href="" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">Handymans</h5>
-                        <p class="card-text">Description</p>
-                        <a href="" class="btn btn-primary">Read More</a>
-                    </div>
-                </div>
-            </div>
+            {j}
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + rep + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + cards + BODY_END + "</html>"
+
+@app.route('/repairDescription',methods=['GET'])
+def repDes():
+    repid=request.args.get('repid',None)
+    if repid:
+        f=open(request.args.get('repid'), 'r')
+        desc=f.read()
+        f.close()
+        description=f"""
+        <div class="container">
+            <h1>{repid}</h1>
+            <p>{desc}</p>
+        </div>
+        """
+    return DOCT + "<html>" + HEAD+ BODY_START + NAVIGATION_BAR + description + BODY_END + "</html>"
