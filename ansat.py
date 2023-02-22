@@ -1,5 +1,17 @@
 from flask import Flask
 from flask import request
+import mysql.connector
+
+# connect to the MySQL server
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="root",
+  database="ansat"
+)
+
+# create a cursor object
+mycursor = mydb.cursor()
 
 app = Flask(__name__)
 DOCT='<!Doctype html>'
@@ -77,16 +89,20 @@ def home():
 
 @app.route('/jobs')
 def jobs():
-    list_of_all_jobs = ["jobs/1.txt","jobs/2.txt","jobs/3.txt"]
+    # execute a select query
+    mycursor.execute("SELECT * FROM jobs")
+    # fetch the results
+    results = mycursor.fetchall()
+
     list_of_cards = []
-    for i in list_of_all_jobs:
+    for row in results:
         list_of_cards.append(f"""
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{i}</h5>
-                    <p class="card-text">Job description</p>
-                    <a href="/jobDescription?job_id={i}" class="btn btn-primary">Read More</a>
+                    <h5 class="card-title">{row[1]}</h5>
+                    <p class="card-text">{row[2]}</p>
+                    <a href="/jobDescription?job_id={row[0]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
         </div>
@@ -253,16 +269,19 @@ def contactUs():
 
 @app.route('/repairs')
 def repair():
-    list_of_repairs=["repairs/1.txt", "repairs/2.txt", "repairs/3.txt"]
+    # execute a select query
+    mycursor.execute("SELECT * FROM repairs")
+    # fetch the results
+    results = mycursor.fetchall()
     list_of_r=[]
-    for i in list_of_repairs:
+    for i in results:
         list_of_r.append(f"""
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{i}</h5>
-                    <p class="card-text">Repair description</p>
-                    <a href="/repairDescription?repid={i}" class="btn btn-primary">Read More</a>
+                    <h5 class="card-title">{i[1]}</h5>
+                    <p class="card-text">{i[2]}</p>
+                    <a href="/repairDescription?repid={i[0]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
         </div>""")
@@ -290,3 +309,5 @@ def repDes():
         </div>
         """
     return DOCT + "<html>" + HEAD+ BODY_START + NAVIGATION_BAR + description + BODY_END + "</html>"
+
+    
