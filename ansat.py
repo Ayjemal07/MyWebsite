@@ -1,5 +1,7 @@
 from flask import Flask
 from flask import request
+from flask import session
+from flask import redirect 
 import mysql.connector
 
 # connect to the MySQL server
@@ -14,6 +16,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 app = Flask(__name__)
+app.secret_key="your_secret_bs"
 DOCT='<!Doctype html>'
 
 HEAD = """
@@ -24,41 +27,55 @@ HEAD = """
     </head>
     """
 BODY_START = "<body>"
-NAVIGATION_BAR = """
-<nav class="navbar bg-dark" data-bs-theme="dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Ansat</a>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Home</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Services</a>
-                <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/jobs">Jobs</a></li>
-                <li><a class="dropdown-item" href="#">Real Estate</a></li>
-                <li><a class="dropdown-item" href="/repairs">Repairs</a></li>
-                <li><a class="dropdown-item" href="#">Whatever</a></li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Buy/Sell Products</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Connect with your community</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/contactUs">Contact Us</a>
-                </li>
-        </ul>
-        <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-primary" type="submit">Search</button>
-        </form>
-    </div>
-</nav>
-"""
 BODY_END = "</body>"
+
+
+def create_navigation_bar():
+    if session.get('logged_in')==True:
+        username=session.get("username")
+        login_html = f"""
+        <a class="btn btn-primary" href="#">Hello {username}</a>
+        """
+    else:
+        login_html = """
+            <a class="btn btn-primary" href="/login" role="button">Login</a>
+        """
+
+    return f"""
+        <nav class="navbar bg-dark" data-bs-theme="dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">Ansat</a>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Services</a>
+                        <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/jobs">Jobs</a></li>
+                        <li><a class="dropdown-item" href="#">Real Estate</a></li>
+                        <li><a class="dropdown-item" href="/repairs">Repairs</a></li>
+                        <li><a class="dropdown-item" href="#">Whatever</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Buy/Sell Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Connect with your community</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contactUs">Contact Us</a>
+                        </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+                {login_html}
+            </div>
+        </nav>
+        """
 
 @app.route('/')
 def home():
@@ -85,7 +102,7 @@ def home():
         </button>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + carousel + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + carousel + BODY_END + "</html>"
 
 @app.route('/jobs')
 def jobs():
@@ -115,7 +132,7 @@ def jobs():
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + cards + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + cards + BODY_END + "</html>"
 
 @app.route('/jobDescription',methods=['GET'])
 def jobdes():
@@ -130,7 +147,7 @@ def jobdes():
                 <p>{desc}</p>
             </div>
         """     
-    return DOCT + "<html>" + HEAD+ BODY_START + NAVIGATION_BAR + description + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
 
 @app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
@@ -264,7 +281,7 @@ def contactUs():
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + contact_form + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + contact_form + BODY_END + "</html>"
 
 
 @app.route('/repairs')
@@ -293,7 +310,7 @@ def repair():
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + NAVIGATION_BAR + cards + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + cards + BODY_END + "</html>"
 
 @app.route('/repairDescription',methods=['GET'])
 def repDes():
@@ -308,6 +325,49 @@ def repDes():
             <p>{desc}</p>
         </div>
         """
-    return DOCT + "<html>" + HEAD+ BODY_START + NAVIGATION_BAR + description + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
+
+@app.route('/login',methods=['GET', 'POST'])
+def login():
+    error_string=""
+    logm=""
+    mycursor.execute("Select username from login")
+    result_usernmame=mycursor.fetchall()
+    mycursor.execute("Select passwords from login")
+    result_passwords=mycursor.fetchall()
+    username=request.form.get('username',result_usernmame)
+    password=request.form.get('password',result_passwords)
+    if username and password:
+        logm=f""" <div> You are logged in! </div>"""
+        session['logged_in']=True
+        session['username']=username
+        return redirect("/")
+    else:
+        username=""
+        password=""
+        if request.form.get('form_submit')=="yes":
+            error_string =f"""
+            <div class="alert alert-danger" role="alert">
+                Credentials are not correct! Please try again.
+            </div>"""
+    form=f"""
+    <div class="container">
+        {error_string}
+        {logm}
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Username</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="username" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+            </div>
+            <button type="submit" name="form_submit" value="yes" class="btn btn-primary">Submit</button>
+        </form>
+    """
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + form + BODY_END + "</html>"
+
+
 
     
