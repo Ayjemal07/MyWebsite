@@ -34,7 +34,7 @@ def create_navigation_bar():
     if session.get('logged_in')==True:
         username=session.get("username")
         login_html = f"""
-        <a class="btn btn-primary" href="#">Hello {username}</a>
+        <a class="btn btn-primary" href="/myprofile">Hello {username}</a>
         """
     else:
         login_html = """
@@ -331,24 +331,30 @@ def repDes():
 def login():
     error_string=""
     logm=""
-    mycursor.execute("Select username from login")
-    result_usernmame=mycursor.fetchall()
-    mycursor.execute("Select passwords from login")
-    result_passwords=mycursor.fetchall()
-    username=request.form.get('username',result_usernmame)
-    password=request.form.get('password',result_passwords)
+    user_count = 0
+    
+    username=request.form.get('username',None)
+    password=request.form.get('password',None)
     if username and password:
-        logm=f""" <div> You are logged in! </div>"""
-        session['logged_in']=True
-        session['username']=username
-        return redirect("/")
-    else:
-        username=""
-        password=""
-        if request.form.get('form_submit')=="yes":
+        mycursor.execute(f"Select username, passwords from login where username='{username}' and passwords='{password}';")
+        logs = mycursor.fetchall()
+        for l in logs:
+            user_count += 1
+        if user_count == 1:
+            logm=f""" <div> You are logged in! </div>"""
+            session['logged_in']=True
+            session['username']=username
+            return redirect("/")
+        else:
             error_string =f"""
             <div class="alert alert-danger" role="alert">
                 Credentials are not correct! Please try again.
+            </div>"""
+    else:
+        if request.form.get('form_submit')=="yes":
+            error_string =f"""
+            <div class="alert alert-danger" role="alert">
+                Please fill the form with username and password!
             </div>"""
     form=f"""
     <div class="container">
@@ -364,10 +370,79 @@ def login():
                 <input type="password" class="form-control" id="exampleInputPassword1" name="password">
             </div>
             <button type="submit" name="form_submit" value="yes" class="btn btn-primary">Submit</button>
+            <a class="btn btn-primary" href="/signup" role="button">Sign Up</a>
         </form>
     """
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + form + BODY_END + "</html>"
 
 
 
-    
+@app.route('/signup',methods=['GET', 'POST'])
+def signup():
+    # If the form (2 fields, username and password) is submitted
+    #   accept username and password from the form and run an Insert query to store in the database
+    #   redirect to /login page
+    # else:
+    #    show the form again
+    error_string=""
+    logm=""
+    errorm=""
+    usersign=0
+    username=request.form.get('username',None)
+    password=request.form.get('password',None)
+    if username and password:
+        mycursor.execute(f" SELECT username from login where username='{username}';")
+        logs = mycursor.fetchall()
+        for l in logs:
+            usersign += 1
+        if usersign==0:
+            mycursor.execute(f"INSERT INTO login (username, passwords) VALUES ('{username}','{password}');")
+            mydb.commit()
+            logm=f""" <div> You have successfully signed up </div>"""
+            return redirect("/login")
+        else:
+            errorm =f"""
+            <div class="alert alert-danger" role="alert">
+                This username is taken, please try again!
+            </div>"""
+    else:
+        if request.form.get('form_submit')=="yes":
+            error_string =f"""
+            <div class="alert alert-danger" role="alert">
+                Please fill the required fields in order to sign up!
+            </div>"""
+    form=f"""
+    <div class="container">
+        {error_string}
+        {logm}
+        {errorm}
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label"> Please select a unique username</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="username" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Create a password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+            </div>
+            <button type="submit" name="form_submit" value="yes" class="btn btn-primary">Sign up</button>
+        </form>
+    """
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + form + BODY_END + "</html>"
+
+@app.route('/myprofile')
+def prof():
+    links=f"""
+    <div class="container">
+        <a class="btn btn-primary" href="/logout" role="button">Log Out</a>
+        <a class="btn btn-primary" href="/jobposts" role="button">Post a repair</a>
+        <a class="btn btn-primary" href="/repairposts" role="button">Post a job</a>
+    </div>
+    """
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + links + BODY_END + "</html>"
+
+
+@app.route('/logout')
+def log():
+    session.clear()
+    return redirect("/")
