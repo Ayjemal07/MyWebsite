@@ -29,6 +29,16 @@ HEAD = """
 BODY_START = "<body>"
 BODY_END = "</body>"
 
+buttons=f"""
+<div class="col">
+    <div class="col-4">
+        <div id="simple-list-example" class="d-flex flex-column gap-2 simple-list-example-scrollspy text-center">
+        <a class="p-1 rounded" href="/logout">Log Out</a>
+        <a class="p-1 rounded" href="/poststuff?postid=job">Post a job</a>
+        <a class="p-1 rounded" href="/poststuff?postid=repair">Post a repair</a>
+        </div>
+    </div>
+</div>"""
 
 def create_navigation_bar():
     if session.get('logged_in')==True:
@@ -138,13 +148,9 @@ def jobs():
 def jobdes():
     job_id=request.args.get('job_id', None)
     if job_id:
-        f=open(request.args.get('job_id'), 'r')
-        desc=f.read()
-        f.close()
         description=f"""
             <div class="container">
                 <h1>{job_id}</h1>
-                <p>{desc}</p>
             </div>
         """     
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
@@ -316,13 +322,9 @@ def repair():
 def repDes():
     repid=request.args.get('repid',None)
     if repid:
-        f=open(request.args.get('repid'), 'r')
-        desc=f.read()
-        f.close()
         description=f"""
         <div class="container">
             <h1>{repid}</h1>
-            <p>{desc}</p>
         </div>
         """
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
@@ -432,17 +434,56 @@ def signup():
 
 @app.route('/myprofile')
 def prof():
-    links=f"""
+    t=f"""
     <div class="container">
-        <a class="btn btn-primary" href="/logout" role="button">Log Out</a>
-        <a class="btn btn-primary" href="/jobposts" role="button">Post a repair</a>
-        <a class="btn btn-primary" href="/repairposts" role="button">Post a job</a>
-    </div>
-    """
-    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + links + BODY_END + "</html>"
+        <div class="row">
+            {buttons}
+        </div>
+    </div>"""
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + t + BODY_END + "</html>"
 
 
 @app.route('/logout')
 def log():
     session.clear()
     return redirect("/")
+
+@app.route('/poststuff',methods=['GET'])
+def post():
+    posta=""
+    postid=request.args.get('postid', None)
+    if postid=="job":
+        posta=f"""
+        <div class="col">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Job Title</label>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Job description</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+        </div>"""
+            
+    elif postid=="repair":
+        posta=f"""  
+        <div class="col">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Repair Title</label>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Repair description</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+        </div>"""
+    ht=f"""
+    <div class="container">
+        <div class="row">
+            {buttons}{posta}
+        </div>
+    </div>"""
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + ht + BODY_END + "</html>"
+
+
+    
