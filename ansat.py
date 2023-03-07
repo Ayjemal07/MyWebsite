@@ -293,7 +293,7 @@ def contactUs():
 @app.route('/repairs')
 def repair():
     # execute a select query
-    mycursor.execute("SELECT * FROM repairs")
+    mycursor.execute("SELECT repair_title, repair_des FROM repairpost")
     # fetch the results
     results = mycursor.fetchall()
     list_of_r=[]
@@ -302,8 +302,8 @@ def repair():
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{i[1]}</h5>
-                    <p class="card-text">{i[2]}</p>
+                    <h5 class="card-title">{i[0]}</h5>
+                    <p class="card-text">{i[1]}</p>
                     <a href="/repairDescription?repid={i[0]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
@@ -450,6 +450,9 @@ def log():
 
 @app.route('/poststuff',methods=['GET','POST'])
 def post():
+    count=0
+    succ=""
+    error=""
     #job params
     job_title=request.form.get('job_title',None)
     job_des=request.form.get('job_des',None) 
@@ -462,73 +465,82 @@ def post():
     repair_pay=request.form.get('repair_pay',None) 
     rep_address=request.form.get('rep_address',None)
     if request.form.get('job_submit')=='yes':
-        mycursor.execute(f"INSERT into jobpost (job_title, job_des, jobsal, job_exp, job_duration) values ('{job_title}', '{job_des}', '{jobsal}', '{job_exp}','{job_duration}');")
-        mydb.commit()
-        ht="<div> You have successfully posted a job post </div>"
+        mycursor.execute(f"Select job_title from jobpost WHERE job_title='{job_title}';")
+        postresult = mycursor.fetchall()
+        for i in postresult:
+            count+=1
+        if count==0:
+            mycursor.execute(f"INSERT into jobpost (job_title, job_des, jobsal, job_exp, job_duration) values ('{job_title}', '{job_des}', '{jobsal}', '{job_exp}','{job_duration}');")
+            mydb.commit()
+            succ="<div> You have successfully posted a job post </div>"
+        else:
+            error=f"""
+            <div class="alert alert-danger" role="alert">
+                A job with the same title already exists please try again!
+            </div>"""
     elif request.form.get('repair_submit')=='yes':
         mycursor.execute(f"INSERT into repairpost (repair_title, repair_des, repair_pay, rep_address) values ('{repair_title}', '{repair_des}', '{repair_pay}','{rep_address}');")
         mydb.commit()
-        ht="<div> You have successfully posted a repair post </div>"
-    else:
-        posta=""
-        postid=request.args.get('postid', None)
-        if postid=="job":
-            posta=f"""
-            <div class="col">
-            <form action="" method="post">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Job Title</label>
-                    <input type="text" class="form-control" id="exampleFormControlInput1" name="job_title">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Job description</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" name="job_des" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Salary</label>
-                    <input type="text" class="form-control" id="exampleFormControlInput1" name="jobsal">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Experience</label>
-                    <input type="text" class="form-control" name="job_exp" id="exampleFormControlInput1">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Duration</label>
-                    <input type="text" class="form-control" name="job_duration" id="exampleFormControlInput1">
-                </div>
-                <button type="submit" name="job_submit" value="yes" class="btn btn-primary">Submit</button>
-            </form>
-            </div>"""
-                
-        elif postid=="repair":
-            posta=f"""  
-            <div class="col">
-            <form action="" method="post">
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Repair Title</label>
-                    <input type="text" class="form-control" name="repair_title" id="exampleFormControlInput1">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Repair description</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" name="repair_des" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Pay</label>
-                    <input type="text" class="form-control" name="repair_pay" id="exampleFormControlInput1">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Address</label>
-                    <input type="text" class="form-control" name="rep_address" id="exampleFormControlInput1">
-                </div>
-                <button type="submit" name="repair_submit" value="yes" class="btn btn-primary">Submit</button>
-            </form>
-            </div>"""
-        ht=f"""
-        <div class="container">
-            <div class="row">
-                {buttons}{posta}
+        succ="<div> You have successfully posted a repair post </div>"
+    posta=""
+    postid=request.args.get('postid', None)
+    if postid=="job":
+        posta=f"""
+        <div class="col">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Job Title</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" name="job_title">
             </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Job description</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" name="job_des" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Salary</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" name="jobsal">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Experience</label>
+                <input type="text" class="form-control" name="job_exp" id="exampleFormControlInput1">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Duration</label>
+                <input type="text" class="form-control" name="job_duration" id="exampleFormControlInput1">
+            </div>
+            <button type="submit" name="job_submit" value="yes" class="btn btn-primary">Submit</button>
+        </form>
         </div>"""
+            
+    elif postid=="repair":
+        posta=f"""  
+        <div class="col">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Repair Title</label>
+                <input type="text" class="form-control" name="repair_title" id="exampleFormControlInput1">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Repair description</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" name="repair_des" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Pay</label>
+                <input type="text" class="form-control" name="repair_pay" id="exampleFormControlInput1">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Address</label>
+                <input type="text" class="form-control" name="rep_address" id="exampleFormControlInput1">
+            </div>
+            <button type="submit" name="repair_submit" value="yes" class="btn btn-primary">Submit</button>
+        </form>
+        </div>"""
+    ht=f"""
+    <div class="container">
+        <div class="row">
+            {buttons}{succ}{error}{posta}
+        </div>
+    </div>"""
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + ht + BODY_END + "</html>"
 
 
