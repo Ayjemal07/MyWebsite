@@ -117,7 +117,7 @@ def home():
 @app.route('/jobs')
 def jobs():
     # execute a select query
-    mycursor.execute("SELECT job_title, job_des FROM jobpost")
+    mycursor.execute("SELECT ID, job_title, job_des FROM jobpost")
     # fetch the results
     results = mycursor.fetchall()
 
@@ -127,8 +127,8 @@ def jobs():
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{row[0]}</h5>
-                    <p class="card-text">{row[1]}</p>
+                    <h5 class="card-title">{row[1]}</h5>
+                    <p class="card-text">{row[2]}</p>
                     <a href="/jobDescription?job_id={row[0]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
@@ -293,7 +293,7 @@ def contactUs():
 @app.route('/repairs')
 def repair():
     # execute a select query
-    mycursor.execute("SELECT repair_title, repair_des FROM repairpost")
+    mycursor.execute("SELECT ID, repair_title, repair_des FROM repairpost")
     # fetch the results
     results = mycursor.fetchall()
     list_of_r=[]
@@ -302,8 +302,8 @@ def repair():
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{i[0]}</h5>
-                    <p class="card-text">{i[1]}</p>
+                    <h5 class="card-title">{i[1]}</h5>
+                    <p class="card-text">{i[2]}</p>
                     <a href="/repairDescription?repid={i[0]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
@@ -389,24 +389,17 @@ def signup():
     error_string=""
     logm=""
     errorm=""
-    usersign=0
     username=request.form.get('username',None)
     password=request.form.get('password',None)
     if username and password:
-        mycursor.execute(f" SELECT username from login where username='{username}';")
-        logs = mycursor.fetchall()
-        for l in logs:
-            usersign += 1
-        if usersign==0:
+        try:
             mycursor.execute(f"INSERT INTO login (username, passwords) VALUES ('{username}','{password}');")
+            if mycursor.rowcount > 0:
+                logm=f""" <div> You have successfully signed up </div>"""
             mydb.commit()
-            logm=f""" <div> You have successfully signed up </div>"""
             return redirect("/login")
-        else:
-            errorm =f"""
-            <div class="alert alert-danger" role="alert">
-                This username is taken, please try again!
-            </div>"""
+        except mysql.connector.errors.IntegrityError:
+            errorm =f""" <div class="alert alert-danger" role="alert"> This username is taken, please try again! </div>"""
     else:
         if request.form.get('form_submit')=="yes":
             error_string =f"""
