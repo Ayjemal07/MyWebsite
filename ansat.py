@@ -117,7 +117,7 @@ def home():
 @app.route('/jobs')
 def jobs():
     # execute a select query
-    mycursor.execute("SELECT ID, job_title, job_des FROM jobpost")
+    mycursor.execute("SELECT ID, job_title, job_des, user_id FROM jobpost")
     # fetch the results
     results = mycursor.fetchall()
 
@@ -129,7 +129,7 @@ def jobs():
                 <div class="card-body">
                     <h5 class="card-title">{row[1]}</h5>
                     <p class="card-text">{row[2]}</p>
-                    <a href="/jobDescription?job_id={row[0]}" class="btn btn-primary">Read More</a>
+                    <a href="/jobDescription?job_id={row[0]}&user_id={row[3]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
         </div>
@@ -146,13 +146,25 @@ def jobs():
 
 @app.route('/jobDescription',methods=['GET'])
 def jobdes():
-    job_id=request.args.get('job_id', None)
-    if job_id:
-        description=f"""
-            <div class="container">
-                <h1>{job_id}</h1>
-            </div>
-        """     
+    description=""
+    job_id=request.args.get('job_id',None)
+    #query for jobID
+    mycursor.execute(f"Select job_title from jobpost where ID='{job_id}';")
+    jobidgrab = mycursor.fetchall()
+    for job in jobidgrab:
+        job_title=job[0]
+    user_id=request.args.get('user_id',None)
+    #query for names
+    mycursor.execute(f"Select first_name, last_name from login where user_id='{user_id}';")
+    displayname = mycursor.fetchall()
+    for name in displayname:
+        first_name=name[0]
+        last_name=name[1]
+    description=f"""
+        <div class="container">
+            <h1>{job_title} posted by {first_name} {last_name}</h1>
+        </div>
+    """     
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
 
 @app.route('/contactUs', methods=['GET', 'POST'])
@@ -334,7 +346,6 @@ def login():
     error_string=""
     logm=""
     user_count = 0
-    
     username=request.form.get('username',None)
     password=request.form.get('password',None)
     if username and password:
@@ -346,6 +357,11 @@ def login():
             logm=f""" <div> You are logged in! </div>"""
             session['logged_in']=True
             session['username']=username
+            mycursor.execute(f"Select user_id from login where username='{username}';")
+            useridgrab=mycursor.fetchall()
+            for i in useridgrab:
+                user_id=i[0]
+            session['user_id']=user_id
             return redirect("/")
         else:
             error_string =f"""
@@ -452,6 +468,7 @@ def post():
     jobsal=request.form.get('jobsal',None) 
     job_exp=request.form.get('job_exp',None) 
     job_duration=request.form.get('job_duration',None)
+    user_id=session.get("user_id")
     #repair parans
     repair_title=request.form.get('repair_title',None)
     repair_des=request.form.get('repair_des',None) 
@@ -463,7 +480,7 @@ def post():
         for i in postresult:
             count+=1
         if count==0:
-            mycursor.execute(f"INSERT into jobpost (job_title, job_des, jobsal, job_exp, job_duration) values ('{job_title}', '{job_des}', '{jobsal}', '{job_exp}','{job_duration}');")
+            mycursor.execute(f"INSERT into jobpost (job_title, job_des, jobsal, job_exp, job_duration, user_id) values ('{job_title}', '{job_des}', '{jobsal}', '{job_exp}','{job_duration}',{user_id});")
             mydb.commit()
             succ="<div> You have successfully posted a job post </div>"
         else:
