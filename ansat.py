@@ -149,20 +149,29 @@ def jobdes():
     description=""
     job_id=request.args.get('job_id',None)
     #query for jobID
-    mycursor.execute(f"Select job_title from jobpost where ID='{job_id}';")
-    jobidgrab = mycursor.fetchall()
-    for job in jobidgrab:
+    mycursor.execute(f"Select job_title, job_des, jobsal, job_exp, job_duration from jobpost where ID='{job_id}';")
+    job_detail_grab = mycursor.fetchall()
+    for job in job_detail_grab:
         job_title=job[0]
+        job_des=job[1]
+        jobsal=job[2]
+        job_exp=job[3]
+        job_duration=job[4]
     user_id=request.args.get('user_id',None)
     #query for names
-    mycursor.execute(f"Select first_name, last_name from login where user_id='{user_id}';")
+    mycursor.execute(f"Select first_name, last_name from login where user_id={user_id};")
     displayname = mycursor.fetchall()
     for name in displayname:
         first_name=name[0]
         last_name=name[1]
     description=f"""
         <div class="container">
-            <h1>{job_title} posted by {first_name} {last_name}</h1>
+            <h1> Job Title: {job_title}</h1>
+            <h1> Job Description: {job_des}</h1>
+            <h1> Job Salary: {jobsal}</h1>
+            <h1> Job Experience Required: {job_exp}</h1>
+            <h1> Job Duration: {job_duration}</h1>
+            <h1> This job posted by {first_name} {last_name} </h1>
         </div>
     """     
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
@@ -305,7 +314,7 @@ def contactUs():
 @app.route('/repairs')
 def repair():
     # execute a select query
-    mycursor.execute("SELECT ID, repair_title, repair_des FROM repairpost")
+    mycursor.execute("SELECT ID, repair_title, repair_des, user_id FROM repairpost")
     # fetch the results
     results = mycursor.fetchall()
     list_of_r=[]
@@ -316,7 +325,7 @@ def repair():
                 <div class="card-body">
                     <h5 class="card-title">{i[1]}</h5>
                     <p class="card-text">{i[2]}</p>
-                    <a href="/repairDescription?repid={i[0]}" class="btn btn-primary">Read More</a>
+                    <a href="/repairDescription?repid={i[0]}&user_id={i[3]}" class="btn btn-primary">Read More</a>
                 </div>
             </div>
         </div>""")
@@ -332,14 +341,24 @@ def repair():
 
 @app.route('/repairDescription',methods=['GET'])
 def repDes():
+    repdescr=""
     repid=request.args.get('repid',None)
-    if repid:
-        description=f"""
+    mycursor.execute(f"Select repair_title from repairpost where ID={repid};")
+    repairgrab=mycursor.fetchall()
+    for repair in repairgrab:
+        repair_title=repair[0]
+    user_id=request.args.get('user_id',None)
+    mycursor.execute(f"Select first_name, last_name from login where user_id='{user_id}';")
+    repairowners = mycursor.fetchall()
+    for name in repairowners:
+        first_name=name[0]
+        last_name=name[1]
+    repdescr=f"""
         <div class="container">
-            <h1>{repid}</h1>
+            <h1>{repair_title} posted by {first_name} {last_name}</h1>
         </div>
-        """
-    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + description + BODY_END + "</html>"
+    """  
+    return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + repdescr + BODY_END + "</html>"
 
 @app.route('/login',methods=['GET', 'POST'])
 def login():
@@ -489,7 +508,7 @@ def post():
                 A job with the same title already exists please try again!
             </div>"""
     elif request.form.get('repair_submit')=='yes':
-        mycursor.execute(f"INSERT into repairpost (repair_title, repair_des, repair_pay, rep_address) values ('{repair_title}', '{repair_des}', '{repair_pay}','{rep_address}');")
+        mycursor.execute(f"INSERT into repairpost (repair_title, repair_des, repair_pay, rep_address, user_id) values ('{repair_title}', '{repair_des}', '{repair_pay}','{rep_address}',{user_id});")
         mydb.commit()
         succ="<div> You have successfully posted a repair post </div>"
     posta=""
