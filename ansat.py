@@ -41,7 +41,7 @@ buttons=f"""
 </div>"""
 
 def create_navigation_bar():
-    if session.get('logged_in')==True:
+    if session.get('logged_in', False)==True:
         username=session.get("username")
         login_html = f"""
         <a class="btn btn-primary" href="/myprofile">Hello {username}</a>
@@ -147,9 +147,9 @@ def jobs():
 @app.route('/jobDescription',methods=['GET'])
 def jobdes():
     description=""
+    user_id=request.args.get('user_id',None)
     job_id=request.args.get('job_id',None)
-    #query for jobID
-    mycursor.execute(f"Select job_title, job_des, jobsal, job_exp, job_duration from jobpost where ID='{job_id}';")
+    mycursor.execute(f"SELECT job_title, job_des, jobsal, job_exp, job_duration, first_name, last_name FROM jobpost INNER JOIN login ON jobpost.user_id = login.user_id WHERE jobpost.ID ='{job_id}' AND login.user_id = {user_id};")
     job_detail_grab = mycursor.fetchall()
     for job in job_detail_grab:
         job_title=job[0]
@@ -157,13 +157,8 @@ def jobdes():
         jobsal=job[2]
         job_exp=job[3]
         job_duration=job[4]
-    user_id=request.args.get('user_id',None)
-    #query for names
-    mycursor.execute(f"Select first_name, last_name from login where user_id={user_id};")
-    displayname = mycursor.fetchall()
-    for name in displayname:
-        first_name=name[0]
-        last_name=name[1]
+        first_name=job[5]
+        last_name=job[6]
     description=f"""
         <div class="container">
             <h1> Job Title: {job_title}</h1>
