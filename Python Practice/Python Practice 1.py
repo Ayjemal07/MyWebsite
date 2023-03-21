@@ -123,3 +123,66 @@ def swappy(a,b,c=0):
     a=b
     b=c
     return (f"a is: {a}, b is: {b}")
+
+
+#Python Program to print Prime Number in a given range.    
+def prime_print(n,m):
+    nonp_lst=[]
+    p_list=[]
+    for i in range(n,m):
+        for x in range(2,i):
+            if i%x==0:
+                nonp_lst.append(i)
+        if i not in nonp_lst:
+            p_list.append(i)
+    return p_list
+
+#Python Program to convert Celsius to Fahrenheit.
+#multiply by 1.8 (or 9/5) and add 32
+
+def find_fahren(c):
+    f=(1.8*c)+32
+    return f
+
+#Python program to calculate Simple Interest with explanation.
+# S.I. = P × R × T
+
+def find_simple_interest(p,r,t):
+    S=(p*r*t)/100
+    return S
+
+#Python Program to count occurrence of a given characters in string
+def find_most_occurring_word(s):
+    d={}
+    l=s.split()
+    new_list=[]
+    for i in l:
+        if i.isupper():
+            new_list.append(i.lower())
+        else:
+            new_list.append(i)
+    for e in new_list:
+        d[e]=d.get(e,0)+1
+        max_key, max_value = max(d.items(), key=lambda x: x[1])
+    if max_value==1:
+        print("No word occurs more than once")
+    else:
+        for k in d.keys():
+            if d[k]==max_value:
+                print(f" The Most occuring word is: {k}, and it occurs {d[k]} times")
+
+#Python Program to check if two Strings are Anagram. cinema=iceman
+#It is a word, phrase, or name formed by rearranging the letters of another
+def anagram_check(a,b):
+    new_list=[]
+    count=0
+    if len(a)==len(b):
+        for x in range(len(b)):
+            if b[x] in a:
+                count+=1
+        if len(b)==count:
+            return True
+        else:
+            return False
+    else:
+        return False
