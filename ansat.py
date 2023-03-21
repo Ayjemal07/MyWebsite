@@ -1,7 +1,8 @@
 from flask import Flask
 from flask import request
 from flask import session
-from flask import redirect 
+from flask import redirect
+import requests
 import mysql.connector
 
 # connect to the MySQL server
@@ -568,4 +569,44 @@ def post():
     return DOCT + "<html>" + HEAD+ BODY_START + create_navigation_bar() + ht + BODY_END + "</html>"
 
 
+@app.route('/restapi')
+def resttest():
+    out = requests.get("https://dog.ceo/api/breeds/image/random")
+    a=out.json()
+    image=a.get("message")
+    status=a.get("status")
+    content=f"""
+    <div class="container">
+        <div class="row">
+        <img src="{image}">
+        <h1> Status:{status} </h1>
+        </div>
+    </div>    
+    """
+    return content
+
+@app.route('/weather')
+def weather_check():
+    out=requests.get("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.99&hourly=temperature_2m&current_weather=true&past_days=1&timezone=America%2FLos_Angeles")
+    a=out.json()
+    weather=a.get("current_weather")
+    print(a)
+    temperature=weather.get("temperature")
+    windspeed=weather.get("windspeed") 
+    winddirection=weather.get("winddirection")
+    time=weather.get("time")
+    unit_of_temprature=a.get("hourly_units").get("temperature_2m")
+    content=f"""
+    <div class="container">
+        <div class="row">
+        <h1> Weather in Hillsboro :
+        Temperature: {temperature}{unit_of_temprature}
+        Wind Speed: {windspeed}
+        Wind Direction: {winddirection}
+        Time: {time}
+        </h1>
+        </div>
+    </div>    
+    """
+    return content
     
