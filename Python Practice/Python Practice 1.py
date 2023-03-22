@@ -186,3 +186,41 @@ def anagram_check(a,b):
             return False
     else:
         return False
+    
+
+#Python program to remove repeated character from string.
+
+def remove_repeated(s):
+    l=[]
+    for i in s:
+        if i not in l:
+            l.append(i)
+    return ''.join(l)
+
+
+#Python program to calculate sum of integers in string
+
+def calc_sum(f):
+    l=[]
+    summ=0
+    for i in f:
+        if i.isdigit():
+            l.append(int(i))
+            print(l)
+    for x in l:
+        summ+=x
+    return summ
+
+
+#Python program to perform left rotation of array elements by two positions
+
+def left_rotation(t):
+    new_list = []
+    count = -2
+    for i in range(len(t)):
+        new_list.append(0)
+
+    for i in range(len(t)):
+        new_list[count] = t[i]
+        count += 1
+    return new_list

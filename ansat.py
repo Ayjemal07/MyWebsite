@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from flask import session
 from flask import redirect
+import json
 import requests
 import mysql.connector
 
@@ -609,4 +610,16 @@ def weather_check():
     </div>    
     """
     return content
-    
+
+
+@app.route('/show_jobs')
+def all_jobs():
+    # Retrieve all jobs data from MySQL database
+    mycursor.execute(f"SELECT * FROM jobpost")
+    jobs_data = mycursor.fetchall()
+
+    # Convert jobs data to JSON format
+    jobs_data_json = json.dumps(jobs_data)
+
+    # Return jobs data as response
+    return jobs_data_json
