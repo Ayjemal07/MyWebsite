@@ -224,3 +224,69 @@ def left_rotation(t):
         new_list[count] = t[i]
         count += 1
     return new_list
+
+
+#Problem:
+
+""" Given an integer, , perform the following conditional actions:
+
+If  is odd, print Weird
+If  is even and in the inclusive range of 2 to 5, print Not Weird
+If  is even and in the inclusive range of 6 to 20 , print Weird
+If  is even and greater than 20, print Not Weird"""
+
+n=int(input("Input an integer"))
+
+if n%2!=0:
+    print("Wierd")
+elif n%2==0 and n in range(2,5):
+    print("Not Wierd")
+elif n%2==0 and n in range(6,20):
+    print("Wierd")
+else:
+    if n>20 and n%2==0:
+        print("Not Wierd")
+
+
+
+#You are given a two lists A and B. Your task is to compute their cartesian product X.
+from itertools import product
+a_list=input("Input a list of numbers")
+a_list=a_list.split()
+A=[]
+B=[]
+for i in a_list:
+    A.append(int(i))
+    print(A)
+b_list=input("Input a list of numbers")
+b_list=b_list.split()
+for x in b_list:
+    B.append(int(x))
+    print(B)
+    
+new=list(product(A,B))
+
+for y in new:
+    print(y, end=' ')
+
+
+
+
+#itertools.permutations(iterable[, r])
+#This tool returns successive k length permutations of elements in an iterable.
+#Your task is to print all possible permutations of size k of the string (S) in lexicographic sorted order.
+
+from itertools import permutations
+S=input()
+S=S.split()
+perm_list=S[0]
+perm_list=sorted(perm_list)
+k=int(S[1])
+
+
+permed=list(permutations(perm_list,k))
+permed=list(permed)
+finale=[]
+
+for i in permed:
+    print("".join(list(i)))
