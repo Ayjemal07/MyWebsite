@@ -290,3 +290,48 @@ finale=[]
 
 for i in permed:
     print("".join(list(i)))
+
+
+#You are given a string S.
+#Your task is to print all possible combinations, up to size k, of the string S in lexicographic sorted order.
+
+from itertools import combinations
+S=input()
+S=S.split()
+comb_list=S[0]
+comb_list=sorted(comb_list)
+k=int(S[1])
+for x in range(1,k+1):
+    for i in combinations(comb_list,x):
+        print("".join(i))
+
+
+#Task. You are given a string S.
+#Your task is to print all possible size k replacement combinations of the string in lexicographic sorted order.
+#Input Format: A single line containing the string S and integer value k separated by a space.
+
+
+from itertools import combinations_with_replacement
+S=input()
+S=S.split()
+co_list=S[0]
+co_list=sorted(co_list)
+k=int(S[1])
+cor=list(combinations_with_replacement(co_list,k))
+for i in cor:
+    print("".join(list(i)))
+
+
+#In this task, we would like for you to appreciate the usefulness of the groupby() function of itertools 
+#You are given a string S. Suppose a character 'c' occurs consecutively X times in the string.
+# Replace these consecutive occurrences of the character 'c' with (X,c) in the string.
+from itertools import groupby
+S=input()
+character_count = []
+characters = []
+for X, c in groupby(S):
+    character_count.append(len(list(c)))
+    characters.append(X)
+merged_list = list(zip(character_count, characters))
+for item in merged_list:
+    print("({}, {})".format(item[0], item[1]), end=' ')
