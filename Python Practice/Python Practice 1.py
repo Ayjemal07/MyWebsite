@@ -335,3 +335,85 @@ for X, c in groupby(S):
 merged_list = list(zip(character_count, characters))
 for item in merged_list:
     print("({}, {})".format(item[0], item[1]), end=' ')
+
+
+"""Task
+
+Raghu is a shoe shop owner. His shop has X number of shoes.
+He has a list containing the size of each shoe he has in his shop.
+There are N number of customers who are willing to pay x amount of money only if they get the shoe of their desired size.
+
+Your task is to compute how much money Raghu earned.
+
+Input Format
+
+The first line contains X, the number of shoes.
+The second line contains the space separated list of all the shoe sizes in the shop.
+The third line contains N, the number of customers.
+The next N lines contain the space separated values of the shoe size desired by the customer and x, the price of the shoe.
+
+Output Format
+
+Print the amount of money earned by Raghu."""
+
+from collections import Counter
+X=int(input()) #number of shoes
+shoe_sizes_available=input()
+shoe_sizes_available=shoe_sizes_available.split()
+list_of_sizes=[]
+for sizes in shoe_sizes_available:
+    list_of_sizes.append(int(sizes))
+print(list_of_sizes)
+counter_sizes=Counter(list_of_sizes) #returns how many each shoe size has in stock
+N=int(input()) #the number of customers
+
+#Dictionary for size and price
+Revenue=0
+for i in range(N):
+    shoe_size_and_price= input()
+    size = int(shoe_size_and_price.split()[0])
+    price = int(shoe_size_and_price.split()[1])
+    
+    if size in counter_sizes.keys():
+        if counter_sizes.get(size)>0:
+            counter_sizes[size]=counter_sizes.get(size)-1
+            Revenue=Revenue+price
+            
+print(Revenue)
+
+
+"""In this challenge, you will be given 2 integers, n and m. There are m words, which might repeat, in word group A. 
+There are m words belonging to word group B. For each  words, check whether the word has appeared in group A or not. 
+Print the indices of each occurrence of m in group A. If it does not appear, print -1.
+
+Example
+
+Group A contains 'a', 'b', 'a' Group B contains 'a', 'c'
+
+For the first word in group B, 'a', it appears at positions 1 and 3 in group A. So print "1 3" next line "-1"
+The second word, 'c', does not appear in group A, so print -1. """
+a_and_b_size=input("A and B size")
+
+a_and_b_size=a_and_b_size.split()
+n=int(a_and_b_size[0])
+m=int(a_and_b_size[1])
+A=[]
+B=[]
+
+#Run a loop for n times and store values for what A will contain
+for i in  range(n):
+    n_words=input("n words")
+    A.append(n_words)
+#Run a loop for n times and store values for what B will contain
+for x in range(m):
+    m_words=input("m words")
+    B.append(m_words)
+for x in range(len(B)):
+    index_remember=[]
+    for y in range(len(A)):
+        if B[x]==A[y]:
+            index_remember.append(str(y+1))
+    if index_remember==[]:
+        print(-1)
+    else:
+        print(" ".join(index_remember))
