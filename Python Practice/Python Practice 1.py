@@ -290,3 +290,130 @@ finale=[]
 
 for i in permed:
     print("".join(list(i)))
+
+
+#You are given a string S.
+#Your task is to print all possible combinations, up to size k, of the string S in lexicographic sorted order.
+
+from itertools import combinations
+S=input()
+S=S.split()
+comb_list=S[0]
+comb_list=sorted(comb_list)
+k=int(S[1])
+for x in range(1,k+1):
+    for i in combinations(comb_list,x):
+        print("".join(i))
+
+
+#Task. You are given a string S.
+#Your task is to print all possible size k replacement combinations of the string in lexicographic sorted order.
+#Input Format: A single line containing the string S and integer value k separated by a space.
+
+
+from itertools import combinations_with_replacement
+S=input()
+S=S.split()
+co_list=S[0]
+co_list=sorted(co_list)
+k=int(S[1])
+cor=list(combinations_with_replacement(co_list,k))
+for i in cor:
+    print("".join(list(i)))
+
+
+#In this task, we would like for you to appreciate the usefulness of the groupby() function of itertools 
+#You are given a string S. Suppose a character 'c' occurs consecutively X times in the string.
+# Replace these consecutive occurrences of the character 'c' with (X,c) in the string.
+from itertools import groupby
+S=input()
+character_count = []
+characters = []
+for X, c in groupby(S):
+    character_count.append(len(list(c)))
+    characters.append(X)
+merged_list = list(zip(character_count, characters))
+for item in merged_list:
+    print("({}, {})".format(item[0], item[1]), end=' ')
+
+
+"""Task
+
+Raghu is a shoe shop owner. His shop has X number of shoes.
+He has a list containing the size of each shoe he has in his shop.
+There are N number of customers who are willing to pay x amount of money only if they get the shoe of their desired size.
+
+Your task is to compute how much money Raghu earned.
+
+Input Format
+
+The first line contains X, the number of shoes.
+The second line contains the space separated list of all the shoe sizes in the shop.
+The third line contains N, the number of customers.
+The next N lines contain the space separated values of the shoe size desired by the customer and x, the price of the shoe.
+
+Output Format
+
+Print the amount of money earned by Raghu."""
+
+from collections import Counter
+X=int(input()) #number of shoes
+shoe_sizes_available=input()
+shoe_sizes_available=shoe_sizes_available.split()
+list_of_sizes=[]
+for sizes in shoe_sizes_available:
+    list_of_sizes.append(int(sizes))
+print(list_of_sizes)
+counter_sizes=Counter(list_of_sizes) #returns how many each shoe size has in stock
+N=int(input()) #the number of customers
+
+#Dictionary for size and price
+Revenue=0
+for i in range(N):
+    shoe_size_and_price= input()
+    size = int(shoe_size_and_price.split()[0])
+    price = int(shoe_size_and_price.split()[1])
+    
+    if size in counter_sizes.keys():
+        if counter_sizes.get(size)>0:
+            counter_sizes[size]=counter_sizes.get(size)-1
+            Revenue=Revenue+price
+            
+print(Revenue)
+
+
+"""In this challenge, you will be given 2 integers, n and m. There are m words, which might repeat, in word group A. 
+There are m words belonging to word group B. For each  words, check whether the word has appeared in group A or not. 
+Print the indices of each occurrence of m in group A. If it does not appear, print -1.
+
+Example
+
+Group A contains 'a', 'b', 'a' Group B contains 'a', 'c'
+
+For the first word in group B, 'a', it appears at positions 1 and 3 in group A. So print "1 3" next line "-1"
+The second word, 'c', does not appear in group A, so print -1. """
+a_and_b_size=input("A and B size")
+
+a_and_b_size=a_and_b_size.split()
+n=int(a_and_b_size[0])
+m=int(a_and_b_size[1])
+A=[]
+B=[]
+
+#Run a loop for n times and store values for what A will contain
+for i in  range(n):
+    n_words=input("n words")
+    A.append(n_words)
+#Run a loop for n times and store values for what B will contain
+for x in range(m):
+    m_words=input("m words")
+    B.append(m_words)
+for x in range(len(B)):
+    index_remember=[]
+    for y in range(len(A)):
+        if B[x]==A[y]:
+            index_remember.append(str(y+1))
+    if index_remember==[]:
+        print(-1)
+    else:
+        print(" ".join(index_remember))
