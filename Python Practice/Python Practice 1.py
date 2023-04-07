@@ -611,3 +611,57 @@ def common_char(s):
         if count==len(s):
             common_letters+=i
     return common_letters
+
+
+"""
+Given an array nums of n integers, return an array of all the unique quadruplets [nums[a], nums[b], nums[c], nums[d]] such that:
+
+0 <= a, b, c, d < n
+a, b, c, and d are distinct.
+nums[a] + nums[b] + nums[c] + nums[d] == target
+You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,0,-1,0,-2,2], target = 0
+Output: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+Example 2:
+
+Input: nums = [2,2,2,2,2], target = 8
+Output: [[2,2,2,2]]
+"""
+def four_sum(nums,target):
+    quad_list=[]
+    for a in range(len(nums)-3):
+        for b in range(a+1,len(nums)-2):
+            for c in range(a+2,len(nums)-1):
+                for d in range(a+3,len(nums)):
+                    if nums[a] + nums[b] + nums[c] +nums[d] == target:
+                        if a != b and a != c and a != d and b!=c and b!=d and c!=d:
+                            #if the answer wants 0s not to be distinct, you can add a condition here
+                            quad = nums[a], nums[b], nums[c], nums[d]
+                            quad=sorted(quad)
+                            if quad not in quad_list:
+                                quad_list.append(quad)
+    return quad_list
+
+
+
+"""
+Merge two lists together
+
+Example 1:
+
+
+Input: list1 = [1,2,4], list2 = [0,3,4]
+Output: [1,1,2,3,4,4]
+"""
+def merging_lists(list1,list2):
+    merged_list=list1+list2
+    merged_list.sort()
+    
+    return merged_list
+
+
