@@ -665,3 +665,109 @@ def merging_lists(list1,list2):
     return merged_list
 
 
+"""
+
+Given an integer array nums, find the 
+subarray
+ with the largest sum, and return its sum.
+Example 1:
+
+Input: nums = [-2,1,-3,4,-1,2,1,-5,4]
+Output: 6
+Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+"""
+
+def maximum_subarray(nums):
+    subarrays = []
+    max_list=[]
+    for i in range(len(nums)):
+        for j in range(i+1, len(nums)+1):
+            subarray = nums[i:j]
+            subarrays.append(subarray)
+            if sum(subarray)>sum(max_list):
+                max_list=subarray
+    if len(nums)==1:
+        return sum(nums)
+    elif len(nums)==2:
+        if nums[0]>nums[1] and nums[0]>sum(nums):
+            return nums[0]
+        if nums[1]>nums[0] and nums[1]>sum(nums):
+            return nums[1]
+        if sum(nums)>nums[0] and sum(nums)>nums[1]:
+            return sum(nums)
+        
+    return sum(max_list)
+
+
+"""
+You are climbing a staircase. It takes n steps to reach the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+"""
+
+def how_many_stairs_to_climb(n):
+    ways_to_climb=0
+    if n == 1:
+        ways_to_climb=1
+    
+    if n==2:
+        ways_to_climb=2
+    w1=1
+    w2=2
+    for i in range(3, n+1):
+        ways_to_climb=w1+w2
+        w1=w2
+        w2=ways_to_climb
+    return ways_to_climb
+
+
+"""
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+Every close bracket has a corresponding open bracket of the same type.
+ 
+
+Example 1:
+
+Input: s = "()"
+Output: true
+Example 2:
+
+Input: s = "()[]{}"
+Output: true
+Example 3:
+
+Input: s = "(]"
+Output: false
+"""
+
+def isvalid(s):
+    
+    strings=['(', ')', '{', '}', '[', ']']
+    new_list=[]
+    for i in range(len(s)):
+        if s[i]==strings[0] or s[i]==strings[2] or s[i]==strings[4]:
+            new_list.append(s[i])
+        else:
+            if len(new_list)==0:
+                return False
+            popped_item=new_list.pop()
+            if s[i]==strings[1]:
+                opening_eq=strings[0]
+            elif s[i]==strings[3]:
+                opening_eq=strings[2]
+            elif s[i]==strings[5]:
+                opening_eq=strings[4]
+            if popped_item!=opening_eq:
+                return False
+    if len(new_list)==0:
+        return True
+    else:
+        return False
+    
+
+
