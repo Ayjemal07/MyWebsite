@@ -768,6 +768,101 @@ def isvalid(s):
         return True
     else:
         return False
+
+
+"""
+Given two integers dividend and divisor, divide two integers without using multiplication, division, and mod operator.
+
+The integer division should truncate toward zero, which means losing its fractional part. 
+For example, 8.345 would be truncated to 8, and -2.7335 would be truncated to -2.
+
+Return the quotient after dividing dividend by divisor.
+
+
+Input: dividend = 10, divisor = 3
+Output: 3
+Explanation: 10/3 = 3.33333.. which is truncated to 3.
+Example 2:
+
+Input: dividend = 7, divisor = -3
+Output: -2
+Explanation: 7/-3 = -2.33333.. which is truncated to -2.
+
+
+"""
+
+def divendisor(dividend,divisor):
+    result=0
+    count=0
+    while result<=abs(dividend):
+        result+=abs(divisor)
+        count+=1
+    if dividend<0 and divisor<0:
+        print("first")
+        return(count-1)
+    elif dividend<0 or divisor<0:
+        print("second")
+        return (0-(count-1))
+    else:
+        return count-1
+    
+"""
+Python program to insert element at a given location in Array of integers. 
+Input: nums-array of integers, num1-integer,index where it should be inserted. 
+
+"""
+
+def insertion(nums,num1,index):
+    a=index-1
+    if index<=0:
+        return("Please pick a number higher than 0")
+    elif index<=len(nums):
+        n_nums=nums[:a]+[num1]+nums[a:]
+    
+    else:
+        return("Placement is out of range")
+    print(n_nums)
+
+
+
+#Write a program in Python to remove duplicate elements from array "s" list of nums and/or strings.
+#Input:[1,2,2,4,5,4]. Output:[1,2,4,5]. Iput:["hi","hello","heya","hi","he","ih"]
+
+def remove_duplicates(s):
+    unique_list=[]
+    for i in range(len(s)):
+        if s[i] not in unique_list:
+            unique_list.append(s[i])
+    return unique_list
     
 
+#Second solution:
+
+def remove_duplicates(s):
+    dictionary={}
+    for i in s:
+        if i in dictionary.keys():
+            dictionary[i]+=1
+        else:
+            dictionary[i]=1
+    for item in dictionary.keys():
+        if dictionary[item]>1:
+            for i in range(dictionary[item]-1):
+                s.remove(item)
+    return s
+
+
+# Third solution
+
+def remove_duplicates(s):
+    return list(set(s))
+remove_duplicates([1,2,2,2,4,5,4])
+
+
+
+#Python program to separate characters in a given string.Input:hello. Output: "h,e,l,l,o"
+
+def char_sep(s):
+    s=",".join(s)
+    print(s)
 
