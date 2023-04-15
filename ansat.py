@@ -31,6 +31,8 @@ HEAD = """
 BODY_START = "<body>"
 BODY_END = "</body>"
 
+JS_SCRIPT= """<script src="static/js/ansat.js"></script>"""
+
 buttons=f"""
 <div class="col">
     <div class="col-4">
@@ -242,11 +244,11 @@ def contactUs():
                 Welcome to Ansat. Please provide information below and we will get back to you as soon as possible.
                 <div class="mb-3">
                 <label for="fname" class="form-label">Your First Name</label>
-                <input type="text" class="form-control" id="fname" name="fname">
+                <input type="text" class="form-control" id="fname" name="fname" onchange="validate_first_name()">
                 </div>
                 <div class="mb-3">
                 <label for="lname" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="lname" name="lname">
+                <input type="text" class="form-control" id="lname" name="lname" onchange="validate_last_name()">
                 </div>
                 <div class="mb-3">
                 <label for="phone" class="form-label">Select Gender: </label>
@@ -305,7 +307,7 @@ def contactUs():
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + contact_form + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + JS_SCRIPT + create_navigation_bar() + contact_form + BODY_END + "</html>"
 
 
 @app.route('/repairs')
@@ -623,3 +625,10 @@ def all_jobs():
 
     # Return jobs data as response
     return jobs_data_json
+
+@app.route('/test_javascript')
+def akshay_test_ep():
+    output = "<html>"
+    output += "test"
+    output += "</html>"
+    return output
