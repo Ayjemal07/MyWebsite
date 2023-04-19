@@ -866,3 +866,156 @@ def char_sep(s):
     s=",".join(s)
     print(s)
 
+"""
+Find First and Last Position of Element in Sorted Array.
+
+Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+
+If target is not found in the array, return [-1, -1].
+
+You must write an algorithm with O(log n) runtime complexity.
+
+ 
+
+Example 1:
+
+Input: nums = [5,7,7,8,8,10], target = 8
+Output: [3,4]
+
+"""
+
+def first_last(nums,target):
+    index_list=[]
+    for i in range(len(nums)):
+        if nums[i]==target:
+            index_list.append(i)
+    
+    if len(index_list)>=1:
+        return [min(index_list)]+[max(index_list)]
+    else:
+        return [-1,-1]
+    
+
+"""
+Given an array of integers nums which is sorted in ascending order, and an integer target, 
+write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.
+You must write an algorithm with O(log n) runtime complexity.
+
+Input: nums = [-1,0,3,5,9,12], target = 9
+Output: 4
+Explanation: 9 exists in nums and its index is 4
+Example 2:
+
+Input: nums = [-1,0,3,5,9,12], target = 2
+Output: -1
+Explanation: 2 does not exist in nums so return -1
+
+"""
+
+
+"""
+first solution without binary search
+def target_index(nums,target):
+    for i in range(len(nums)):
+        if nums[i]==target:
+            return i
+    if target not in nums:
+        return -1
+"""
+#faster solution:
+
+def index_target(nums,target):
+    start=0
+    end=len(nums)-1
+    while start<=end:
+        middle=(end+start)//2
+        if nums[start]==target:
+            return start
+        if nums[end]==target:
+            return end
+        if nums[middle]==target:
+            return middle
+        elif end-start<=1 and nums[end]!=target and nums[start]!=target:
+            return -1
+        else:
+            if nums[middle]<target:
+                start=middle
+                end=end
+            else:
+                start=start
+                end=middle
+
+"""
+You are a product manager and currently leading a team to develop a new product. Unfortunately, 
+the latest version of your product fails the quality check. 
+Since each version is developed based on the previous version, all the versions after a bad version are also bad.
+
+Suppose you have n versions [1, 2, ..., n] and you want to find out the first bad one,
+
+which causes all the following ones to be bad.
+
+You are given an API bool isBadVersion(version) which returns whether version is bad. 
+
+Implement a function to find the first bad version. You should minimize the number of calls to the API.
+
+
+Input: n = 5, bad = 4
+Output: 4
+Explanation:
+call isBadVersion(3) -> false
+call isBadVersion(5) -> true
+call isBadVersion(4) -> true
+Then 4 is the first bad version.
+
+"""
+def isBadVersion(n):
+    if n>=4:
+        return True
+    return False
+
+def firstBadVersion(n: int) -> int:
+    start=1
+    end=n
+    while (end-start)>4:
+        middle=(end+start)//2
+        if isBadVersion(middle)==True:
+            start=start
+            end=middle
+        else:
+            start=middle
+            end=end
+
+    for i in range(start,end+1):
+        if isBadVersion(i)==True:
+            return i
+        
+"""
+
+Given a sorted array of distinct integers and a target value, return the index if the target is found. 
+
+If not, return the index where it would be if it were inserted in order.
+
+You must write an algorithm with O(log n) runtime complexity.
+
+Input: nums = [1,3,5,6], target = 5
+Output: 2
+Example 2:
+
+Input: nums = [1,3,5,6], target = 2
+Output: 1
+
+"""
+
+def num_target(nums,target):
+    new_list=[]
+    for i in range(len(nums)):
+        if nums[i]==target:
+            return i
+        else:
+            if target not in nums:
+                new_list.append(nums[i])
+                new_list.append(target)
+    new_list.sort()
+    for x in range(len(new_list)):
+        if new_list[x]==target:
+            return x
