@@ -177,6 +177,9 @@ def jobdes():
 
 @app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
+    javascript_error = """
+    <div id='js_error_display'></div>
+    """
     error_string=""
     anotherErr=""
     if request.form.get('fname',None) != None:
@@ -240,6 +243,7 @@ def contactUs():
         <div class="row">
             {error_string}
             {anotherErr}
+            {javascript_error}
             <form action="" method="post">
                 Welcome to Ansat. Please provide information below and we will get back to you as soon as possible.
                 <div class="mb-3">
@@ -254,16 +258,16 @@ def contactUs():
                 <label for="phone" class="form-label">Select Gender: </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="Gender1" value="Female">
+                    <input class="form-check-input" type="radio" name="Gender" id="Gender1" value="Female" onchange="validate_gender()">
                     <label class="form-check-label" for="inlineRadio1">Female</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="Gender2" value="Male">
+                    <input class="form-check-input" type="radio" name="Gender" id="Gender2" value="Male" onchange="validate_gender()">
                     <label class="form-check-label" for="inlineRadio2">Male</label>
                 </div>
                 <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email">
+                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" onchange="validate_email()">
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
                 <div class="mb-3">
