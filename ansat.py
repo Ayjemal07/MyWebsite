@@ -31,6 +31,8 @@ HEAD = """
 BODY_START = "<body>"
 BODY_END = "</body>"
 
+JS_SCRIPT= """<script src="static/js/ansat.js"></script>"""
+
 buttons=f"""
 <div class="col">
     <div class="col-4">
@@ -175,6 +177,9 @@ def jobdes():
 
 @app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
+    javascript_error = """
+    <div id='js_error_display'></div>
+    """
     error_string=""
     anotherErr=""
     if request.form.get('fname',None) != None:
@@ -238,30 +243,31 @@ def contactUs():
         <div class="row">
             {error_string}
             {anotherErr}
+            {javascript_error}
             <form action="" method="post">
                 Welcome to Ansat. Please provide information below and we will get back to you as soon as possible.
                 <div class="mb-3">
                 <label for="fname" class="form-label">Your First Name</label>
-                <input type="text" class="form-control" id="fname" name="fname">
+                <input type="text" class="form-control" id="fname" name="fname" onchange="validate_first_name()">
                 </div>
                 <div class="mb-3">
                 <label for="lname" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="lname" name="lname">
+                <input type="text" class="form-control" id="lname" name="lname" onchange="validate_last_name()">
                 </div>
                 <div class="mb-3">
                 <label for="phone" class="form-label">Select Gender: </label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="Gender1" value="Female">
+                    <input class="form-check-input" type="radio" name="Gender" id="Gender1" value="Female" onchange="validate_gender()">
                     <label class="form-check-label" for="inlineRadio1">Female</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="Gender2" value="Male">
+                    <input class="form-check-input" type="radio" name="Gender" id="Gender2" value="Male" onchange="validate_gender()">
                     <label class="form-check-label" for="inlineRadio2">Male</label>
                 </div>
                 <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email">
+                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" onchange="validate_email()">
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
                 <div class="mb-3">
@@ -305,7 +311,7 @@ def contactUs():
         </div>
     </div>
     """
-    return DOCT + "<html>" + HEAD + BODY_START + create_navigation_bar() + contact_form + BODY_END + "</html>"
+    return DOCT + "<html>" + HEAD + BODY_START + JS_SCRIPT + create_navigation_bar() + contact_form + BODY_END + "</html>"
 
 
 @app.route('/repairs')
@@ -623,3 +629,10 @@ def all_jobs():
 
     # Return jobs data as response
     return jobs_data_json
+
+@app.route('/test_javascript')
+def akshay_test_ep():
+    output = "<html>"
+    output += "test"
+    output += "</html>"
+    return output
